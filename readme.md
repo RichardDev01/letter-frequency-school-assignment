@@ -20,5 +20,8 @@ type "tekst\columbus.txt" | python mapper_lf.py | sort  | python reduce_lf.py | 
 ## Comparing text to languages
 
 ```
-Todo
+python classify_rows.py "output_matrix/dutch_matrix.csv" "output_matrix/english_matrix.csv" "tekst/ne-en-tekst.txt"
 ```
+
+![result](https://cdn.discordapp.com/attachments/701351521433944066/842802337898299442/unknown.png)
+
