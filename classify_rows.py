@@ -162,8 +162,10 @@ def get_result(nederlands_model: pd.DataFrame, engels_model: pd.DataFrame, input
 
         if nederlands_result < engels_result:
             sys.stdout.write('NL\t1\n')
-        else:
+        elif nederlands_result > engels_result:
             sys.stdout.write('EN\t1\n')
+        else:
+            sys.stdout.write('None\t1\n')
 
 
 # System arguments given for the python execution

@@ -56,13 +56,17 @@ Om dit op te lossen hebben in de classify_rows.py de functies zo geschreven dat 
 Onze classify_rows doet hetzelfde als een mapper, hij geeft aan of een row Engels of Nederlands is met een 1, na deze functie soorteren wij alles en reduce wij de rows tot een eindresultaat
 
 Als laaste puntje: 
+Om uiteindelijk te bepalen in welke taal de zin is moeten we kijken welke matrix (Engels/Nederlands) het meeste overeen komt met de matrix van de zin
 
+We hebben uiteindelijk dit stukje code gebruikt om te kijken hoeveel 2 matrixen overeen komen:
 ```
 nederlands_result = abs(row_result - nederlands_model).sum()
 ```
+We hadden verwacht dat dit hetzelfde zou doen:
 ```
 nederlands_result = mean_squared_error(nederlands_model, row_result)
 ```
+Maar dit blijkt niet zo te zijn, we weten niet waarom.
 
 # How to use
 
