@@ -2,25 +2,18 @@
 
 import sys
 
-for line in sys.stdin:
-    alfa = 'abcdefghijklmnopqrstuvwxyz '
+for row in sys.stdin:
+    row = row.strip()
 
-    line = line.strip()
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'  # Als we dit niet gebruiken neemt hij 'bijzondere' letters mee die we als speciaal teken willen zien.
+    for index, char in enumerate(row[:-1]):
+        combination = [row[index], row[index+1]]
+        for combination_index in range(len(combination)):
+            if str(combination[combination_index]).lower() in alphabet:
+                combination[combination_index] = str(combination[combination_index]).lower()
+            elif combination[combination_index] == ' ':
+                combination[combination_index] = '#'
+            else:
+                combination[combination_index] = '_'
 
-    for index, word in enumerate(line[:-1]):
-        # special characters are _
-        if line[index].lower() not in alfa:
-            l1 = '_'
-        else:
-            l1 = line[index].lower()
-        if line[index + 1].lower() not in alfa:
-            l2 = '_'
-        else:
-            l2 = line[index + 1].lower()
-
-        # spaces are #
-        if l1 == ' ':
-            l1 = '#'
-        if l2 == ' ':
-            l2 = '#'
-        sys.stdout.write(f'{l1}-{l2}\t{1}\n')
+        sys.stdout.write(f'{combination[0]}-{combination[1]}\t{1}\n')

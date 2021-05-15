@@ -13,28 +13,21 @@ def mapper_lf(row: list) -> str:
     :return: string like mapper structure compared to mapper_lf.py
     """
     output_string = ""
-    alfa = 'abcdefghijklmnopqrstuvwxyz '
 
-    for index, word in enumerate(row[:-1]):
-        # special characters are _
-        if row[index].lower() not in alfa:
-            l1 = '_'
-        else:
-            l1 = row[index].lower()
-        if row[index + 1].lower() not in alfa:
-            l2 = '_'
-        else:
-            l2 = row[index + 1].lower()
+    alphabet = 'abcdefghijklmnopqrstuvwxyz' # Als we dit niet gebruiken neemt hij 'bijzondere' letters mee die we als speciaal teken willen zien.
+    for index, char in enumerate(row[:-1]):
+        combination = [row[index], row[index+1]]
+        for combination_index in range(len(combination)):
+            if str(combination[combination_index]).lower() in alphabet:
+                combination[combination_index] = str(combination[combination_index]).lower()
+            elif combination[combination_index] == ' ':
+                combination[combination_index] = '#'
+            else:
+                combination[combination_index] = '_'
 
-        # spaces are #
-        if l1 == ' ':
-            l1 = '#'
-        if l2 == ' ':
-            l2 = '#'
-        output_string += f'{l1}-{l2}\t{1}\n'
-        # sys.stdout.write(f'{l1}-{l2}\t{1}\n')
+        output_string += f'{combination[0]}-{combination[1]}\t{1}\n'
+
     return output_string
-
 
 def sort_lf(input_str: str) -> str:
     """
@@ -63,16 +56,11 @@ def reduce_lf(input_str: str) -> str:
     current_count = 0
     word = None
     input_str = input_str.split("\n")
-    # print(input_str)
+
     for line in input_str:
-        # print(line)
         line = line.strip()
         word, count = line.split('\t', 1)
-
-        try:
-            count = int(count)
-        except ValueError:
-            continue
+        count = int(count)
 
         if current_word == word:
             current_count += count
@@ -86,6 +74,7 @@ def reduce_lf(input_str: str) -> str:
     if current_word == word:
         output_string += '%s %s' % (current_word, current_count)
         # sys.stdout.write('%s %s' % (current_word, current_count))
+
     return output_string
 
 
@@ -127,10 +116,10 @@ def data_to_matrix(input_str: str) -> pd.DataFrame:
     input_list = input_str.split("\n")
     dct = {}
 
-    alfaPlus = 'abcdefghijklmnopqrstuvwxyz#_'
-    for item in alfaPlus:
+    alphabet = 'abcdefghijklmnopqrstuvwxyz#_'
+    for item in alphabet:
         dct[item] = {}
-        for iter2 in alfaPlus:
+        for iter2 in alphabet:
             dct[item][iter2] = 0
 
     for line in input_list:
@@ -143,8 +132,7 @@ def data_to_matrix(input_str: str) -> pd.DataFrame:
     df = pd.DataFrame(dct).T.fillna(0)
     return df
 
-
-def compare_row(nederlands_model: pd.DataFrame, engels_model: pd.DataFrame, input_data: list) -> list:
+def get_result(nederlands_model: pd.DataFrame, engels_model: pd.DataFrame, input_data: list):
     """
     Compares the input data with the models and determine the language
 
@@ -153,26 +141,25 @@ def compare_row(nederlands_model: pd.DataFrame, engels_model: pd.DataFrame, inpu
     :param input_data:
     :return:
     """
-    predicted_lst = [0, 0]
     for index, row in enumerate(input_data):
-        try:
-            row_result = data_to_matrix(mapper_percentage(reduce_lf(sort_lf(mapper_lf(row))))).reset_index()
-        except ValueError:
-            print(f"this row has unknown value\t | rowID= {index} | {row} |")
+
+        if row == '':  # Empty row
             continue
+        row_result = data_to_matrix(mapper_percentage(reduce_lf(sort_lf(mapper_lf(row))))).reset_index()
+
         row_result = np.array(row_result.drop(row_result.columns[0], axis=1).stack().tolist())
 
-        # nederlands_result = abs(row_result - nederlands_model).sum()
-        # engels_result = abs(row_result - engels_model).sum()
+        nederlands_result = abs(row_result - nederlands_model).sum()
+        engels_result = abs(row_result - engels_model).sum()
 
-        nederlands_result = mean_squared_error(nederlands_model, row_result)
-        engels_result = mean_squared_error(engels_model, row_result)
+        # nederlands_result = mean_squared_error(nederlands_model, row_result)
+        # engels_result = mean_squared_error(engels_model, row_result)
 
         if nederlands_result < engels_result:
-            predicted_lst[0] += 1
+            sys.stdout.write('NL\t1\n')
         else:
-            predicted_lst[1] += 1
-    return predicted_lst
+            sys.stdout.write('EN\t1\n')
+
 
 
 # System arguments given for the python execution
@@ -192,12 +179,14 @@ df_english = np.array(df_english.drop(df_english.columns[0], axis=1).stack().tol
 data_input = [line.rstrip('\n') for line in open(input_text_path, encoding="utf8").readlines()]
 
 # Compare each row in given input_data file to the dutch and english dateframe matrix
-outcome = compare_row(df_dutch, df_english, data_input)
+# outcome = compare_row(df_dutch, df_english, data_input)
+
+get_result(df_dutch, df_english, data_input)
 
 # Display results
-print(f"\nThe result of the given text file is:\n"
-      f"Dutch sentences: {outcome[0]}\n"
-      f"English sentences: {outcome[1]}")
+# print(f"\nThe result of the given text file is:\n"
+#       f"Dutch sentences: {outcome[0]}\n"
+#       f"English sentences: {outcome[1]}")
 
 """
 row_result = data_to_matrix(mapper_percentage(reduce_lf(sort_lf(mapper_lf(data_input[0]))))).reset_index()

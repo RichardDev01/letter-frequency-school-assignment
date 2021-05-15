@@ -2,7 +2,7 @@ import sys
 import pandas as pd
 
 if len(sys.argv) < 2:
-    raise Exception("Not eneugh arguamnts")
+    raise Exception("Not enough arguamnts")
 
 save_file = sys.argv[1]
 
@@ -11,10 +11,10 @@ df = pd.DataFrame()
 lst = []
 dct = {}
 
-alfaPlus = 'abcdefghijklmnopqrstuvwxyz#_'
-for item in alfaPlus:
+alphabet = 'abcdefghijklmnopqrstuvwxyz#_'
+for item in alphabet:
     dct[item] = {}
-    for iter2 in alfaPlus:
+    for iter2 in alphabet:
         dct[item][iter2] = 0
 
 for line in sys.stdin:
