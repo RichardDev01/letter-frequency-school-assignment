@@ -1,3 +1,4 @@
+"""Reduce the inputs"""
 import sys
 current_word = None
 current_count = 0
@@ -5,10 +6,8 @@ word = None
 
 
 for line in sys.stdin:
-
     line = line.strip()
     word, count = line.split('\t', 1)
-
     count = int(count)
 
     if current_word == word:

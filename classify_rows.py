@@ -7,14 +7,15 @@ from sklearn.metrics import mean_squared_error
 
 def mapper_lf(row: list) -> str:
     """
-    Map the inputs with 1
+    Map the inputs with 1 and replaces spaces with ' ' and special chars with '_'
 
     :param row: list of string, each element contains a sentence
     :return: string like mapper structure compared to mapper_lf.py
     """
     output_string = ""
 
-    alphabet = 'abcdefghijklmnopqrstuvwxyz' # Als we dit niet gebruiken neemt hij 'bijzondere' letters mee die we als speciaal teken willen zien.
+    # Als we dit niet gebruiken neemt hij 'bijzondere' letters mee die we als speciaal teken willen zien.
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
     for index, char in enumerate(row[:-1]):
         combination = [row[index], row[index+1]]
         for combination_index in range(len(combination)):
@@ -33,7 +34,7 @@ def sort_lf(input_str: str) -> str:
     """
     Sort the input
 
-    :param input_str:
+    :param input_str: input strings is equal to what you can expect from a reduce/mapper structure like hadoop
     :return: string like sort structure compared to built in sort function from windows/linux
     """
     output_string = ""
@@ -48,7 +49,7 @@ def reduce_lf(input_str: str) -> str:
     """
     Reduce the inputs
 
-    :param input_str:
+    :param input_str: input strings is equal to what you can expect from a reduce/mapper structure like hadoop
     :return: string like reduce structure compared to reduce_lf.py
     """
     output_string = ""
@@ -67,13 +68,12 @@ def reduce_lf(input_str: str) -> str:
         else:
             if current_word:
                 output_string += '%s %s\n' % (current_word, current_count)
-                # sys.stdout.write('%s %s\n' % (current_word, current_count))
+
             current_count = count
             current_word = word
 
     if current_word == word:
         output_string += '%s %s' % (current_word, current_count)
-        # sys.stdout.write('%s %s' % (current_word, current_count))
 
     return output_string
 
@@ -82,7 +82,7 @@ def mapper_percentage(input_str: str) -> str:
     """
     Map the inputs with percentage from the sum of the matrix
 
-    :param input_str:
+    :param input_str: input strings is equal to what you can expect from a reduce/mapper structure like hadoop
     :return: string like mapper structure compared to mapper_percentage.py
     """
     output_string = ""
@@ -90,19 +90,19 @@ def mapper_percentage(input_str: str) -> str:
 
     input_list = input_str.split("\n")
 
+    # Get sum of total combinations
     for line in input_list:
         value_string = line.split("\n")[0].split(" ")
-
         sum_percentage.append(int(value_string[1]))
 
-    # total values
+    # Total values
     total_count = sum(sum_percentage)
 
+    # Map keys with percentage value
     for inp in input_list:
         keys_val = inp.split(" ")
         keys = keys_val[0].split("-")
         output_string += f"{keys[0]},{keys[1]}={int(keys_val[1]) / total_count * 100}\n"
-        # sys.stdout.write(f"{keys[0]},{keys[1]}={int(keys_val[1]) / total_count * 100}\n")
     return output_string[:-1]
 
 
@@ -110,18 +110,20 @@ def data_to_matrix(input_str: str) -> pd.DataFrame:
     """
     Transforms the data to a matrics
 
-    :param input_str:
+    :param input_str: input strings is equal to what you can expect from a reduce/mapper structure like hadoop
     :return: panda dataframe with percentages
     """
     input_list = input_str.split("\n")
     dct = {}
 
     alphabet = 'abcdefghijklmnopqrstuvwxyz#_'
+    # Create a dictionary of 28*28
     for item in alphabet:
         dct[item] = {}
         for iter2 in alphabet:
             dct[item][iter2] = 0
 
+    # File dictionary
     for line in input_list:
         line = line.strip()
         line = line.split('=')
@@ -129,24 +131,27 @@ def data_to_matrix(input_str: str) -> pd.DataFrame:
 
         dct[line[0][0]][line[0][1]] = float(line[1])
 
+    # Dictionary to dataframe and fill empty spaces with 0
     df = pd.DataFrame(dct).T.fillna(0)
     return df
 
 def get_result(nederlands_model: pd.DataFrame, engels_model: pd.DataFrame, input_data: list):
     """
-    Compares the input data with the models and determine the language
+    Compares the input data with the models and determine the language and maps it
 
     :param nederlands_model:
     :param engels_model:
-    :param input_data:
-    :return:
+    :param input_data: list of strings, each element contains a sentence
     """
     for index, row in enumerate(input_data):
-
-        if row == '':  # Empty row
+        # Empty row / sentence
+        if row == '':
             continue
+
+        # Mapper/reduce structure
         row_result = data_to_matrix(mapper_percentage(reduce_lf(sort_lf(mapper_lf(row))))).reset_index()
 
+        # Convert outcome to a list
         row_result = np.array(row_result.drop(row_result.columns[0], axis=1).stack().tolist())
 
         nederlands_result = abs(row_result - nederlands_model).sum()
@@ -159,7 +164,6 @@ def get_result(nederlands_model: pd.DataFrame, engels_model: pd.DataFrame, input
             sys.stdout.write('NL\t1\n')
         else:
             sys.stdout.write('EN\t1\n')
-
 
 
 # System arguments given for the python execution
@@ -178,24 +182,4 @@ df_english = np.array(df_english.drop(df_english.columns[0], axis=1).stack().tol
 # Loading input_data data from text file and remove new line chars
 data_input = [line.rstrip('\n') for line in open(input_text_path, encoding="utf8").readlines()]
 
-# Compare each row in given input_data file to the dutch and english dateframe matrix
-# outcome = compare_row(df_dutch, df_english, data_input)
-
 get_result(df_dutch, df_english, data_input)
-
-# Display results
-# print(f"\nThe result of the given text file is:\n"
-#       f"Dutch sentences: {outcome[0]}\n"
-#       f"English sentences: {outcome[1]}")
-
-"""
-row_result = data_to_matrix(mapper_percentage(reduce_lf(sort_lf(mapper_lf(data_input[0]))))).reset_index()
-
-row_result = np.array(row_result.drop(row_result.columns[0], axis=1).stack().tolist())
-
-# nederlands_result = abs(row_result - df_dutch)
-# engels_result = abs(row_result - df_english)
-#
-# print(mean_squared_error(df_dutch, row_result))
-# print(mean_squared_error(df_english, row_result))
-"""

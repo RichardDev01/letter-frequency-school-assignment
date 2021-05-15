@@ -1,11 +1,12 @@
-"""mapper.py"""
+"""Map the inputs with 1 and replaces spaces with ' ' and special chars with '_'"""
 
 import sys
 
 for row in sys.stdin:
     row = row.strip()
 
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'  # Als we dit niet gebruiken neemt hij 'bijzondere' letters mee die we als speciaal teken willen zien.
+    # Als we dit niet gebruiken neemt hij 'bijzondere' letters mee die we als speciaal teken willen zien.
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
     for index, char in enumerate(row[:-1]):
         combination = [row[index], row[index+1]]
         for combination_index in range(len(combination)):

@@ -1,9 +1,11 @@
+"""Map the inputs with percentage from the sum of the matrix"""
 import sys
 
-sum_percentage = []
 
+sum_percentage = []
 data = sys.stdin.readlines()
 
+# Get sum of total combinations
 for line in data:
     input_string = line.split("\n")[0].split(" ")
 
@@ -12,6 +14,7 @@ for line in data:
 # total values
 total_count = sum(sum_percentage)
 
+# Map keys with percentage value
 for inp in data:
     keys_val = inp.split(" ")
     keys = keys_val[0].split("-")

@@ -1,18 +1,14 @@
+"""This function reduces the predicted languages"""
 import sys
 
-"""
-This function reduces the predicted languages
-"""
 
 current_language = None
 current_count = 0
 word = None
 
 for line in sys.stdin:
-
     line = line.strip()
     language, count = line.split('\t', 1)
-
     count = int(count)
 
     if current_language == language:
