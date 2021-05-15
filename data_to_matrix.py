@@ -9,7 +9,6 @@ if len(sys.argv) < 2:
 save_file = sys.argv[1]
 
 df = pd.DataFrame()
-
 dct = {}
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz#_'

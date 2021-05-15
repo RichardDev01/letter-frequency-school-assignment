@@ -78,7 +78,7 @@ def reduce_lf(input_str: str) -> str:
     return output_string
 
 
-def mapper_percentage(input_str: str) -> str:
+def convert_to_percentage(input_str: str) -> str:
     """
     Map the inputs with percentage from the sum of the matrix
 
@@ -149,7 +149,7 @@ def get_result(nederlands_model: pd.DataFrame, engels_model: pd.DataFrame, input
             continue
 
         # Mapper/reduce structure
-        row_result = data_to_matrix(mapper_percentage(reduce_lf(sort_lf(mapper_lf(row))))).reset_index()
+        row_result = data_to_matrix(convert_to_percentage(reduce_lf(sort_lf(mapper_lf(row))))).reset_index()
 
         # Convert outcome to a list
         row_result = np.array(row_result.drop(row_result.columns[0], axis=1).stack().tolist())

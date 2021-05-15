@@ -47,14 +47,22 @@ In de meegeleverde tekst vanaf de canvas, staat op regel 62 in de tekst een blan
 
 Deze regel hebben wij er uitgefilterd omdat je niet een taal kan afleiden van een lege regel en dus niet mag/moet meenemen in het classificeren
 
-Wij hebben niet echt een perse nette manier gebruikt om per regel te kunnen classificeren maar we hebben in de classify_rows.py de functies zo geschreven dat het hetzelfde doet als een losse mapper/reduce functie.
+Achteraf hadden we de opdracht van tevoren al anders op willen bouwen, vanwege een gebrek aan tijd hebben we dit niet allemaal opnieuw kunnen schrijven,.
 
-Dit komt omdat we de opdracht verkeerd hadden begrepen en de gehele tekst voorspelden op welke taal het is ipv per regel
+Dit kom omdat we aan het begin van de opdracht dachten dat we een hele tekst moesten classificeren maar dit bleek per regel te moeten.
+
+Om dit op te lossen hebben in de classify_rows.py de functies zo geschreven dat het hetzelfde doet als een losse mapper/reduce functie.
 
 Onze classify_rows doet hetzelfde als een mapper, hij geeft aan of een row Engels of Nederlands is met een 1, na deze functie soorteren wij alles en reduce wij de rows tot een eindresultaat
 
-```python classify_rows.py "output_matrix/dutch_matrix.csv" "output_matrix/english_matrix.csv" "tekst/ne-en-tekst.txt" | sort | python reduce_rows.py```
+Als laaste puntje: 
 
+```
+nederlands_result = abs(row_result - nederlands_model).sum()
+```
+```
+nederlands_result = mean_squared_error(nederlands_model, row_result)
+```
 
 # How to use
 
